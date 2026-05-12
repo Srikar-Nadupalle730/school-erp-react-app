@@ -19,7 +19,6 @@ export function AdminApp({ userInfo, onLogout }) {
 
   const [loading, setLoading] = useState(false);
 
-  // LOAD DATA
   const loadData = async () => {
     try {
       const teachersData = await getApi(
@@ -44,7 +43,6 @@ export function AdminApp({ userInfo, onLogout }) {
     loadData();
   }, []);
 
-  // ADD TEACHER
   const handleAddTeacher = async (e) => {
     e.preventDefault();
 
@@ -68,14 +66,12 @@ export function AdminApp({ userInfo, onLogout }) {
       await loadData();
     } catch (err) {
       console.error(err);
-
       alert('Failed to add teacher');
     } finally {
       setLoading(false);
     }
   };
 
-  // ADD STUDENT
   const handleAddStudent = async (e) => {
     e.preventDefault();
 
@@ -99,229 +95,283 @@ export function AdminApp({ userInfo, onLogout }) {
       await loadData();
     } catch (err) {
       console.error(err);
-
       alert('Failed to add student');
     } finally {
       setLoading(false);
     }
   };
 
+  const cardStyle = {
+    background: '#ffffff',
+    padding: '20px',
+    borderRadius: '12px',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+    marginBottom: '24px',
+  };
+
+  const inputStyle = {
+    width: '100%',
+    padding: '12px',
+    borderRadius: '8px',
+    border: '1px solid #ccc',
+    marginBottom: '12px',
+    fontSize: '14px',
+  };
+
+  const buttonStyle = {
+    padding: '12px 18px',
+    borderRadius: '8px',
+    border: 'none',
+    background: '#4f46e5',
+    color: 'white',
+    cursor: 'pointer',
+    fontWeight: 'bold',
+  };
+
   return (
-    <div style={{ padding: '30px' }}>
+    <div
+      style={{
+        minHeight: '100vh',
+        background: '#f5f7fb',
+        padding: '30px',
+      }}
+    >
+      {/* HEADER */}
+
       <div
         style={{
           display: 'flex',
           justifyContent: 'space-between',
+          alignItems: 'center',
           marginBottom: '30px',
+          flexWrap: 'wrap',
+          gap: '16px',
         }}
       >
         <div>
-          <h1>Admin Dashboard</h1>
+          <h1
+            style={{
+              margin: 0,
+              color: '#111827',
+            }}
+          >
+            Admin Dashboard
+          </h1>
 
-          <p>
+          <p
+            style={{
+              marginTop: '6px',
+              color: '#6b7280',
+            }}
+          >
             Welcome {userInfo?.user}
           </p>
         </div>
 
-        <button onClick={onLogout}>
+        <button
+          onClick={onLogout}
+          style={{
+            ...buttonStyle,
+            background: '#ef4444',
+          }}
+        >
           Logout
         </button>
       </div>
 
-      {/* ADD TEACHER */}
+      {/* FORMS */}
 
       <div
         style={{
-          marginBottom: '40px',
-          border: '1px solid #ccc',
-          padding: '20px',
-          borderRadius: '10px',
+          display: 'grid',
+          gridTemplateColumns:
+            'repeat(auto-fit,minmax(320px,1fr))',
+          gap: '24px',
+          marginBottom: '30px',
         }}
       >
-        <h2>Add Teacher</h2>
+        {/* TEACHER FORM */}
 
-        <form onSubmit={handleAddTeacher}>
-          <input
-            type="text"
-            placeholder="Teacher Name"
-            value={teacherForm.teacher_name}
-            onChange={(e) =>
-              setTeacherForm({
-                ...teacherForm,
-                teacher_name: e.target.value,
-              })
-            }
-            required
-          />
+        <div style={cardStyle}>
+          <h2>Add Teacher</h2>
 
-          <br />
-          <br />
+          <form onSubmit={handleAddTeacher}>
+            <input
+              type="text"
+              placeholder="Teacher Name"
+              value={teacherForm.teacher_name}
+              onChange={(e) =>
+                setTeacherForm({
+                  ...teacherForm,
+                  teacher_name: e.target.value,
+                })
+              }
+              style={inputStyle}
+              required
+            />
 
-          <input
-            type="email"
-            placeholder="Email"
-            value={teacherForm.email}
-            onChange={(e) =>
-              setTeacherForm({
-                ...teacherForm,
-                email: e.target.value,
-              })
-            }
-            required
-          />
+            <input
+              type="email"
+              placeholder="Email"
+              value={teacherForm.email}
+              onChange={(e) =>
+                setTeacherForm({
+                  ...teacherForm,
+                  email: e.target.value,
+                })
+              }
+              style={inputStyle}
+              required
+            />
 
-          <br />
-          <br />
+            <input
+              type="text"
+              placeholder="Phone"
+              value={teacherForm.phone}
+              onChange={(e) =>
+                setTeacherForm({
+                  ...teacherForm,
+                  phone: e.target.value,
+                })
+              }
+              style={inputStyle}
+            />
 
-          <input
-            type="text"
-            placeholder="Phone"
-            value={teacherForm.phone}
-            onChange={(e) =>
-              setTeacherForm({
-                ...teacherForm,
-                phone: e.target.value,
-              })
-            }
-          />
+            <button
+              type="submit"
+              style={buttonStyle}
+              disabled={loading}
+            >
+              {loading
+                ? 'Adding...'
+                : 'Add Teacher'}
+            </button>
+          </form>
+        </div>
 
-          <br />
-          <br />
+        {/* STUDENT FORM */}
 
-          <button type="submit" disabled={loading}>
-            {loading
-              ? 'Adding...'
-              : 'Add Teacher'}
-          </button>
-        </form>
+        <div style={cardStyle}>
+          <h2>Add Student</h2>
+
+          <form onSubmit={handleAddStudent}>
+            <input
+              type="text"
+              placeholder="Student Name"
+              value={studentForm.student_name}
+              onChange={(e) =>
+                setStudentForm({
+                  ...studentForm,
+                  student_name: e.target.value,
+                })
+              }
+              style={inputStyle}
+              required
+            />
+
+            <input
+              type="email"
+              placeholder="Email"
+              value={studentForm.email}
+              onChange={(e) =>
+                setStudentForm({
+                  ...studentForm,
+                  email: e.target.value,
+                })
+              }
+              style={inputStyle}
+              required
+            />
+
+            <input
+              type="text"
+              placeholder="Phone"
+              value={studentForm.phone}
+              onChange={(e) =>
+                setStudentForm({
+                  ...studentForm,
+                  phone: e.target.value,
+                })
+              }
+              style={inputStyle}
+            />
+
+            <button
+              type="submit"
+              style={buttonStyle}
+              disabled={loading}
+            >
+              {loading
+                ? 'Adding...'
+                : 'Add Student'}
+            </button>
+          </form>
+        </div>
       </div>
 
-      {/* ADD STUDENT */}
+      {/* DATA TABLES */}
 
       <div
         style={{
-          marginBottom: '40px',
-          border: '1px solid #ccc',
-          padding: '20px',
-          borderRadius: '10px',
+          display: 'grid',
+          gridTemplateColumns:
+            'repeat(auto-fit,minmax(320px,1fr))',
+          gap: '24px',
         }}
       >
-        <h2>Add Student</h2>
+        {/* TEACHERS */}
 
-        <form onSubmit={handleAddStudent}>
-          <input
-            type="text"
-            placeholder="Student Name"
-            value={studentForm.student_name}
-            onChange={(e) =>
-              setStudentForm({
-                ...studentForm,
-                student_name: e.target.value,
-              })
-            }
-            required
-          />
+        <div style={cardStyle}>
+          <h2>Teachers</h2>
 
-          <br />
-          <br />
+          {(teachers || []).length === 0 ? (
+            <p>No teachers found</p>
+          ) : (
+            (teachers || []).map((teacher) => (
+              <div
+                key={teacher.name}
+                style={{
+                  padding: '12px',
+                  borderBottom:
+                    '1px solid #e5e7eb',
+                }}
+              >
+                <strong>
+                  {teacher.teacher_name}
+                </strong>
 
-          <input
-            type="email"
-            placeholder="Email"
-            value={studentForm.email}
-            onChange={(e) =>
-              setStudentForm({
-                ...studentForm,
-                email: e.target.value,
-              })
-            }
-            required
-          />
+                <div>{teacher.email}</div>
+              </div>
+            ))
+          )}
+        </div>
 
-          <br />
-          <br />
+        {/* STUDENTS */}
 
-          <input
-            type="text"
-            placeholder="Phone"
-            value={studentForm.phone}
-            onChange={(e) =>
-              setStudentForm({
-                ...studentForm,
-                phone: e.target.value,
-              })
-            }
-          />
+        <div style={cardStyle}>
+          <h2>Students</h2>
 
-          <br />
-          <br />
+          {(students || []).length === 0 ? (
+            <p>No students found</p>
+          ) : (
+            (students || []).map((student) => (
+              <div
+                key={student.name}
+                style={{
+                  padding: '12px',
+                  borderBottom:
+                    '1px solid #e5e7eb',
+                }}
+              >
+                <strong>
+                  {student.student_name}
+                </strong>
 
-          <button type="submit" disabled={loading}>
-            {loading
-              ? 'Adding...'
-              : 'Add Student'}
-          </button>
-        </form>
-      </div>
-
-      {/* TEACHERS */}
-
-      <div style={{ marginBottom: '40px' }}>
-        <h2>Teachers</h2>
-
-        {(teachers || []).length === 0 ? (
-          <p>No teachers found</p>
-        ) : (
-          (teachers || []).map((teacher) => (
-            <div
-              key={teacher.name}
-              style={{
-                border: '1px solid #ddd',
-                padding: '10px',
-                marginBottom: '10px',
-                borderRadius: '8px',
-              }}
-            >
-              <strong>
-                {teacher.teacher_name}
-              </strong>
-
-              <br />
-
-              {teacher.email}
-            </div>
-          ))
-        )}
-      </div>
-
-      {/* STUDENTS */}
-
-      <div>
-        <h2>Students</h2>
-
-        {(students || []).length === 0 ? (
-          <p>No students found</p>
-        ) : (
-          (students || []).map((student) => (
-            <div
-              key={student.name}
-              style={{
-                border: '1px solid #ddd',
-                padding: '10px',
-                marginBottom: '10px',
-                borderRadius: '8px',
-              }}
-            >
-              <strong>
-                {student.student_name}
-              </strong>
-
-              <br />
-
-              {student.email}
-            </div>
-          ))
-        )}
+                <div>{student.email}</div>
+              </div>
+            ))
+          )}
+        </div>
       </div>
     </div>
   );
