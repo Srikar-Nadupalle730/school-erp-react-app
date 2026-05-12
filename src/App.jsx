@@ -1,26 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { api, callApi } from './api.js';
+import { api } from './api.js';
 import { AdminApp } from './AdminApp.jsx';
 import { TeacherApp } from './TeacherApp.jsx';
 import { StudentApp } from './StudentApp.jsx';
 import { HomePage } from './HomePage.jsx';
 import './App.css';
-
-// Fetch and attach Frappe CSRF token
-async function fetchCsrfToken() {
-  try {
-    const res = await api.get('/api/method/frappe.auth.get_logged_user');
-
-    const token =
-      res.headers['x-frappe-csrftoken'] || res.data?.csrf_token;
-
-    if (token && token !== 'None') {
-      api.defaults.headers.common['X-Frappe-CSRF-Token'] = token;
-    }
-  } catch (err) {
-    console.error('CSRF token fetch failed:', err);
-  }
-}
 
 const Login = ({ onLogin, onBack }) => {
   const [usr, setUsr] = useState('');
@@ -39,8 +23,6 @@ const Login = ({ onLogin, onBack }) => {
         usr,
         pwd,
       });
-
-      await fetchCsrfToken();
 
       onLogin();
     } catch (err) {
@@ -143,7 +125,7 @@ const Login = ({ onLogin, onBack }) => {
                 color: 'var(--text-secondary)',
               }}
             >
-              Username / Email
+              Username
             </label>
 
             <input
@@ -256,28 +238,36 @@ function App() {
 
   const loadUserInfo = async () => {
     try {
-      await fetchCsrfToken();
-
-      const res = await callApi(
-        'school_erp.api.get_current_user_role'
+      const res = await api.get(
+        '/api/method/frappe.auth.get_logged_user'
       );
 
-      console.log('USER INFO RESPONSE:', res);
+      console.log('LOGIN USER:', res.data);
 
-      const userData = res.message || res;
+      if (
+        res.data.message &&
+        res.data.message !== 'Guest'
+      ) {
+        const user = res.data.message;
 
-      if (userData && userData.role) {
-        setUserInfo(userData);
+        let role = 'student';
+
+        if (user === 'Administrator') {
+          role = 'admin';
+        }
+
+        setUserInfo({
+          role,
+          user,
+        });
+
         setIsAuthenticated(true);
       } else {
         setIsAuthenticated(false);
-        setUserInfo(null);
       }
     } catch (err) {
       console.error(err);
-
       setIsAuthenticated(false);
-      setUserInfo(null);
     } finally {
       setLoading(false);
     }
@@ -380,11 +370,6 @@ function App() {
       }}
     >
       <h2>Access Restricted</h2>
-
-      <p>
-        Your account has no assigned school role.
-        Please contact the Administrator.
-      </p>
 
       <button
         onClick={handleLogout}

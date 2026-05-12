@@ -13,13 +13,11 @@ export const api = axios.create({
   },
 });
 
-// POST-based RPC for Frappe whitelisted methods
 export const callApi = async (method, args = {}) => {
   const res = await api.post(`/api/method/${method}`, args);
   return res.data;
 };
 
-// GET-based API
 export const getApi = async (path) => {
   const res = await api.get(`/api/${path}`);
   return res.data;
