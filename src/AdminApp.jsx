@@ -89,7 +89,7 @@ const StudentsList = () => {
     if (!addForm.first_name.trim()) { setAddMsg('First name is required.'); return; }
     setAddSaving(true); setAddMsg('');
 
-    // Remove empty strings to prevent Frappe date/link validation errors
+    // Remove empty strings to prevent Frappe validation errors
     const payload = { ...addForm };
     Object.keys(payload).forEach(key => {
       if (payload[key] === '') delete payload[key];
@@ -100,7 +100,19 @@ const StudentsList = () => {
       setAddMsg('✅ Student added successfully!');
       setTimeout(() => { setShowAdd(false); setAddForm({ first_name: '', last_name: '', email: '', grade: '', enrollment_date: '' }); setAddMsg(''); loadStudents(); }, 1000);
     } catch (e) {
-      setAddMsg(`❌ ${e.response?.data?._server_messages || e.response?.data?.exception || 'Error adding student.'}`);
+      console.error("Full Error:", e.response?.data);
+      let errorMsg = 'Error adding student.';
+      if (e.response?.data?._server_messages) {
+        try {
+          const messages = JSON.parse(e.response.data._server_messages);
+          errorMsg = JSON.parse(messages[0]).message || messages[0];
+        } catch (parseError) {
+          errorMsg = String(e.response.data._server_messages);
+        }
+      } else if (e.response?.data?.exception) {
+        errorMsg = e.response.data.exception.split(':').pop();
+      }
+      setAddMsg(`❌ ${errorMsg}`);
     } finally { setAddSaving(false); }
   };
 
@@ -252,7 +264,19 @@ const TeachersList = () => {
       setAddMsg('✅ Teacher added successfully!');
       setTimeout(() => { setShowAdd(false); setAddForm({ first_name: '', last_name: '', email: '', subject: '' }); setAddMsg(''); loadTeachers(); }, 1000);
     } catch (e) {
-      setAddMsg(`❌ ${e.response?.data?._server_messages || e.response?.data?.exception || 'Error adding teacher.'}`);
+      console.error("Full Error:", e.response?.data);
+      let errorMsg = 'Error adding teacher.';
+      if (e.response?.data?._server_messages) {
+        try {
+          const messages = JSON.parse(e.response.data._server_messages);
+          errorMsg = JSON.parse(messages[0]).message || messages[0];
+        } catch (parseError) {
+          errorMsg = String(e.response.data._server_messages);
+        }
+      } else if (e.response?.data?.exception) {
+        errorMsg = e.response.data.exception.split(':').pop();
+      }
+      setAddMsg(`❌ ${errorMsg}`);
     } finally { setAddSaving(false); }
   };
 

@@ -16,17 +16,26 @@ export const api = axios.create({
   },
 });
 
-export const callApi = async (method, args = {}) => {
+// CALL FRAPPE WHITELISTED METHODS
+export const callApi = async (
+  method,
+  args = {}
+) => {
   const res = await api.post(
     `/api/method/${method}`,
-    args
+    {
+      data: args,
+    }
   );
 
   return res.data.message;
 };
 
+// GET FRAPPE REST DATA
 export const getApi = async (path) => {
-  const res = await api.get(`/api/${path}`);
+  const res = await api.get(
+    `/api/${path}`
+  );
 
-  return res.data.message || res.data;
+  return res.data;
 };
