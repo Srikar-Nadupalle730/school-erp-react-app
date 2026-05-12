@@ -6,7 +6,7 @@ import { StudentApp } from './StudentApp.jsx';
 import { HomePage } from './HomePage.jsx';
 import './App.css';
 
-// Fetch and attach Frappe CSRF token to all subsequent requests
+// Fetch and attach Frappe CSRF token
 async function fetchCsrfToken() {
   try {
     const res = await api.get('/api/method/frappe.auth.get_logged_user');
@@ -147,7 +147,6 @@ const Login = ({ onLogin, onBack }) => {
             </label>
 
             <input
-              id="login-username"
               type="text"
               value={usr}
               onChange={(e) => setUsr(e.target.value)}
@@ -177,7 +176,6 @@ const Login = ({ onLogin, onBack }) => {
             </label>
 
             <input
-              id="login-password"
               type="password"
               value={pwd}
               onChange={(e) => setPwd(e.target.value)}
@@ -195,7 +193,6 @@ const Login = ({ onLogin, onBack }) => {
           </div>
 
           <button
-            id="login-submit"
             type="submit"
             disabled={loading}
             style={{
@@ -265,8 +262,12 @@ function App() {
         'school_erp.api.get_current_user_role'
       );
 
-      if (res.message && res.message.role) {
-        setUserInfo(res.message);
+      console.log('USER INFO RESPONSE:', res);
+
+      const userData = res.message || res;
+
+      if (userData && userData.role) {
+        setUserInfo(userData);
         setIsAuthenticated(true);
       } else {
         setIsAuthenticated(false);
