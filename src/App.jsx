@@ -1,270 +1,29 @@
 import React, { useState, useEffect } from 'react';
-import { api } from './api.js';
 import { AdminApp } from './AdminApp.jsx';
 import { TeacherApp } from './TeacherApp.jsx';
 import { StudentApp } from './StudentApp.jsx';
 import { HomePage } from './HomePage.jsx';
 import './App.css';
 
-const Login = ({ onLogin, onBack }) => {
-  const [usr, setUsr] = useState('');
-  const [pwd, setPwd] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-
-  const handleLogin = async (e) => {
-    e.preventDefault();
-
-    setLoading(true);
-    setError('');
-
-    try {
-      await api.post('/api/method/login', {
-        usr,
-        pwd,
-      });
-
-      onLogin();
-    } catch (err) {
-      console.error(err);
-
-      if (!err.response) {
-        setError('Cannot reach server.');
-      } else if (
-        err.response.status === 401 ||
-        err.response.status === 403
-      ) {
-        setError('Invalid username or password.');
-      } else {
-        setError(
-          `Login failed (${err.response.status}). Please try again.`
-        );
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <div
-      style={{
-        display: 'flex',
-        height: '100vh',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: 'var(--bg-primary)',
-      }}
-    >
-      <div
-        className="glass-panel"
-        style={{
-          padding: '48px',
-          width: '420px',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '24px',
-        }}
-      >
-        <div style={{ textAlign: 'center' }}>
-          <div
-            style={{
-              width: '60px',
-              height: '60px',
-              background:
-                'linear-gradient(135deg,var(--accent-primary),var(--accent-secondary))',
-              borderRadius: '16px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              margin: '0 auto 16px',
-              fontSize: '1.5rem',
-              fontWeight: 'bold',
-              color: 'white',
-            }}
-          >
-            ERP
-          </div>
-
-          <h2 style={{ marginBottom: '4px' }}>
-            School ERP Suite
-          </h2>
-
-          <p>Sign in with your credentials</p>
-        </div>
-
-        {error && (
-          <div
-            style={{
-              background: 'rgba(253,121,168,0.1)',
-              border: '1px solid var(--accent-tertiary)',
-              borderRadius: '8px',
-              padding: '12px',
-              color: 'var(--accent-tertiary)',
-              textAlign: 'center',
-              fontSize: '0.9rem',
-            }}
-          >
-            {error}
-          </div>
-        )}
-
-        <form
-          onSubmit={handleLogin}
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '16px',
-          }}
-        >
-          <div>
-            <label
-              style={{
-                display: 'block',
-                marginBottom: '6px',
-                fontSize: '0.85rem',
-                color: 'var(--text-secondary)',
-              }}
-            >
-              Username
-            </label>
-
-            <input
-              type="text"
-              value={usr}
-              onChange={(e) => setUsr(e.target.value)}
-              placeholder="Administrator"
-              style={{
-                width: '100%',
-                padding: '12px',
-                borderRadius: '8px',
-                border: '1px solid var(--border-color)',
-                background: 'var(--bg-secondary)',
-                color: 'white',
-                fontSize: '0.95rem',
-              }}
-            />
-          </div>
-
-          <div>
-            <label
-              style={{
-                display: 'block',
-                marginBottom: '6px',
-                fontSize: '0.85rem',
-                color: 'var(--text-secondary)',
-              }}
-            >
-              Password
-            </label>
-
-            <input
-              type="password"
-              value={pwd}
-              onChange={(e) => setPwd(e.target.value)}
-              placeholder="Your password"
-              style={{
-                width: '100%',
-                padding: '12px',
-                borderRadius: '8px',
-                border: '1px solid var(--border-color)',
-                background: 'var(--bg-secondary)',
-                color: 'white',
-                fontSize: '0.95rem',
-              }}
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            style={{
-              padding: '14px',
-              borderRadius: '8px',
-              background:
-                'linear-gradient(135deg,var(--accent-primary),var(--accent-secondary))',
-              color: 'white',
-              border: 'none',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-              fontSize: '1rem',
-              marginTop: '8px',
-              opacity: loading ? 0.7 : 1,
-            }}
-          >
-            {loading ? 'Signing in…' : 'Sign In'}
-          </button>
-        </form>
-
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
-          <button
-            onClick={onBack}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: 'var(--accent-primary)',
-              cursor: 'pointer',
-              fontSize: '0.85rem',
-              fontWeight: 500,
-              padding: 0,
-            }}
-          >
-            ← Back to Home
-          </button>
-
-          <p style={{ fontSize: '0.8rem', margin: 0 }}>
-            Contact Admin for credentials
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-};
-
 function App() {
-  const [isAuthenticated, setIsAuthenticated] =
-    useState(false);
-
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userInfo, setUserInfo] = useState(null);
-
   const [loading, setLoading] = useState(true);
 
-  const [showLogin, setShowLogin] = useState(false);
+  // TEMPORARY AUTH FOR API TOKEN TESTING
+  // Since API token already authenticates backend requests,
+  // we bypass cookie/session login completely.
 
   const loadUserInfo = async () => {
     try {
-      const res = await api.get(
-        '/api/method/frappe.auth.get_logged_user'
-      );
+      // TEMPORARY STATIC ADMIN USER
+      // Replace later with proper role API if needed
+      setUserInfo({
+        role: 'admin',
+        user: 'Administrator',
+      });
 
-      console.log('LOGIN USER:', res.data);
-
-      if (
-        res.data.message &&
-        res.data.message !== 'Guest'
-      ) {
-        const user = res.data.message;
-
-        let role = 'student';
-
-        if (user === 'Administrator') {
-          role = 'admin';
-        }
-
-        setUserInfo({
-          role,
-          user,
-        });
-
-        setIsAuthenticated(true);
-      } else {
-        setIsAuthenticated(false);
-      }
+      setIsAuthenticated(true);
     } catch (err) {
       console.error(err);
       setIsAuthenticated(false);
@@ -277,21 +36,9 @@ function App() {
     loadUserInfo();
   }, []);
 
-  const handleLogin = () => {
-    setLoading(true);
-    loadUserInfo();
-  };
-
-  const handleLogout = async () => {
-    try {
-      await api.get('/api/method/logout');
-    } catch (err) {
-      console.error(err);
-    }
-
+  const handleLogout = () => {
     setIsAuthenticated(false);
     setUserInfo(null);
-    setShowLogin(false);
   };
 
   if (loading) {
@@ -306,24 +53,23 @@ function App() {
           color: 'var(--text-secondary)',
         }}
       >
-        Loading…
+        Loading...
       </div>
     );
   }
 
+  // OPTIONAL:
+  // Show homepage if not authenticated
   if (!isAuthenticated) {
-    if (showLogin) {
-      return (
-        <Login
-          onLogin={handleLogin}
-          onBack={() => setShowLogin(false)}
-        />
-      );
-    }
-
     return (
       <HomePage
-        onLoginClick={() => setShowLogin(true)}
+        onLoginClick={() => {
+          setIsAuthenticated(true);
+          setUserInfo({
+            role: 'admin',
+            user: 'Administrator',
+          });
+        }}
       />
     );
   }
@@ -370,6 +116,10 @@ function App() {
       }}
     >
       <h2>Access Restricted</h2>
+
+      <p>
+        Your account has no assigned role.
+      </p>
 
       <button
         onClick={handleLogout}
